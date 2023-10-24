@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+    Default: bayu-anfw-backup-001
+  S3ObjectKey:
+    Type: String
+    Description: Key for the object in the S3 bucket
+    Default: bayu-anfw-rule-001.json
+  RuleGroupArn:
+    Type: String
+    Description: ARN of the Network Firewall rule group
+  LambdaFunctionName:
+    Type: String
+    Description: Lambda function name
+    Default: LambdaANFWBackup
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ANFWBackupLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ANFWBackupPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - network-firewall:DescribeRuleGroup
+                  - s3:PutObject
+                Resource: '*'
+
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    DependsOn: S3Bucket
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.8
+      Timeout: 30
+      Environment:
+        Variables:
+          RuleGroupArn: !Ref RuleGroupArn
+          S3BucketName: !Ref S3BucketName
+          S3ObjectKey: !Ref S3ObjectKey
+      Code:
+        ZipFile: |
+          import os
+          import botocore
+          import logging
+          import sys
+          import threading
+          import boto3
+          import json
+
+          from datetime import datetime
+          from botocore.exceptions import ClientError
+
+          logging.basicConfig(stream = sys.stdout)
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          region = os.environ['AWS_REGION']
+
+          def lambda_handler(event, context):
+              # Create Boto3 clients
+              network_firewall_client = boto3.client('network-firewall', region_name=region)
+              s3_client = boto3.client('s3')
+
+              # ARN for the rule group
+              rule_group_arn = os.getenv('RuleGroupArn')
+
+              # Describe rule group
+              response = network_firewall_client.describe_rule_group(
+                  RuleGroupArn=rule_group_arn
+              )
+
+              # Convert datetime objects to string
+              def handle_datetime(obj):
+                  if isinstance(obj, datetime):
+                      return obj.isoformat()
+                  raise TypeError("Type not serializable")
+
+              # Export the response to JSON
+              json_data = json.dumps(response, default=handle_datetime)
+
+              # Upload to S3 bucket
+              bucket_name = os.getenv('S3BucketName')
+              object_key = os.getenv('S3ObjectKey')
+
+              s3_client.put_object(
+                  Bucket=bucket_name,
+                  Key=object_key,
+                  Body=json_data
+              )
+
+              return {
+                  'statusCode': 200,
+                  'body': json_data
+              }
+
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref S3BucketName
