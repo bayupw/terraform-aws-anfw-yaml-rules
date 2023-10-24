@@ -1,0 +1,2 @@
+drop tcp $PROD_VPCS any <> $PROD_VPCS any (msg:"Blocked TCP that is not HTTP"; flow:established; app-layer-protocol:!http; sid:100; rev:1;)
+drop ip $PROD_VPCS any <> $PROD_VPCS any (msg: "Block non-TCP traffic."; ip_proto:!TCP;sid:200; rev:1;)

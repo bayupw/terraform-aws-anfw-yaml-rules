@@ -17,6 +17,12 @@ resource "aws_networkfirewall_rule_group" "this" {
           definition = var.home_nets
         }
       }
+      ip_sets {
+        key = "PROD_VPCS"
+        ip_set {
+          definition = ["10.1.0.0/24","10.2.0.0/24"]
+        }
+      }
     }
 
     rules_source {

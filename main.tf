@@ -1,9 +1,8 @@
 locals {
-  vpcs                     = yamldecode(file("${path.module}/yaml-input/vpcs.yaml"))
-  sg_rules                 = yamldecode(file("${path.module}/yaml-input/sg-rules.yaml"))
-  fivetuple_rule_group_001 = yamldecode(file("${path.module}/yaml-input/fivetuple-rule-group-001.yaml"))
-  fivetuple_rule_group_002 = yamldecode(file("${path.module}/yaml-input/fivetuple-rule-group-002.yaml"))
-  fqdn_rule_group_001      = yamldecode(file("${path.module}/yaml-input/fqdn-rule-group-001.yaml"))
+  vpcs                     = yamldecode(file("${path.module}/input/vpcs.yaml"))
+  sg_rules                 = yamldecode(file("${path.module}/input/sg-rules.yaml"))
+  fivetuple_rule_group_001 = yamldecode(file("${path.module}/input/fivetuple-rule-group-001.yaml"))
+  fqdn_rule_group_001      = yamldecode(file("${path.module}/input/fqdn-rule-group-001.yaml"))
 }
 
 resource "aws_ec2_transit_gateway" "this" {

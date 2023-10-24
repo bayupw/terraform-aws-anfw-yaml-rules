@@ -1,0 +1,3 @@
+variable "rules" {
+  type    = any
+}

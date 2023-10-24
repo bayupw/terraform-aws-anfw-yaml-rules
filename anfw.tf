@@ -11,14 +11,23 @@ module "fivetuple_rule_group_001" {
   ]
 }
 
-module "fivetuple_rule_group_002" {
-  source = "./modules/anfw-stateful-rule-groups"
+module "suricata_rule_group_001" {
+  source = "./modules/anfw-suricata-rule-groups"
 
-  rules = local.fivetuple_rule_group_002
-  home_nets = [
-    "10.1.0.0/24",
-    "10.2.0.0/24",
-  ]
+  rules = {
+    capacity    = 10
+    name        = "suricata-rules"
+    type        = "STATEFUL"
+    rule_order  = "STRICT_ORDER"
+    description = "Stateful rules suricata"
+    home_nets   = ["10.1.0.0/24", "10.2.0.0/24"]
+    prod_vpcs   = ["10.100.0.0/24", "10.200.0.0/24"]
+    rules_file  = "./input/suricata.rules"
+    tags = {
+      tag1 = "value1"
+      tag2 = "value2"
+    }
+  }
 }
 
 module "fqdn_rule_group_001" {
@@ -52,7 +61,7 @@ resource "aws_networkfirewall_firewall_policy" "anfw_policy" {
 
     stateful_rule_group_reference {
       priority     = 20
-      resource_arn = module.fivetuple_rule_group_002.aws_networkfirewall_rule_group.arn
+      resource_arn = module.suricata_rule_group_001.aws_networkfirewall_rule_group.arn
     }
 
     stateful_rule_group_reference {
