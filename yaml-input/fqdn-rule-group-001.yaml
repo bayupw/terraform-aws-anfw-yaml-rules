@@ -1,0 +1,16 @@
+capacity: 10
+name: "fqdn-rule-group-001"
+type: "STATEFUL"
+rule_order: "STRICT_ORDER"
+tags:
+  tag1: "value1"
+  tag2: "value2"
+
+generated_rules_type: "ALLOWLIST"
+target_types:
+  - "HTTP_HOST"
+  - "TLS_SNI"
+
+targets:
+  - "www.amazon.com"
+  - "theinstillery.com"

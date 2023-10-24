@@ -1,0 +1,33 @@
+capacity: 10
+name: "fivetuple-rule-group-001"
+type: "STATEFUL"
+rule_order: "STRICT_ORDER"
+tags:
+  tag1: "value1"
+  tag2: "value2"
+
+stateful_rules:
+
+  - allow-http-any1:
+    action: "PASS"
+    destination: "1.1.1.1/32"
+    destination_port: "80"
+    protocol: "HTTP"
+    direction: "ANY"
+    source_port: "ANY"
+    source: "ANY"
+    rule_option:
+      keyword: "sid"
+      settings: ["1"]
+
+  - allow-tcp-any2:
+    action: "PASS"
+    destination: "1.1.1.2/32"
+    destination_port: "443"
+    protocol: "TCP"
+    direction: "ANY"
+    source_port: "ANY"
+    source: "2.2.2.2/32"
+    rule_option:
+      keyword: "sid"
+      settings: ["2"]

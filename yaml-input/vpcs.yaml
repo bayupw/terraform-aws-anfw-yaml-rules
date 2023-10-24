@@ -1,0 +1,20 @@
+spoke1:
+  name: "spoke1"
+  cidr_block: "10.1.0.0/24"
+  tags:
+    Name: "bayu-spoke1-vpc"
+    Owner: "bayu"
+
+spoke2:
+  name: "spoke2"
+  cidr_block: "10.2.0.0/24"
+  tags:
+    Name: "bayu-spoke2-vpc"
+    Owner: "bayu"
+
+inspection:
+  name: "inspection-vpc"
+  cidr_block: "10.10.0.0/24"
+  tags:
+    Name: "bayu-inspection-vpc"
+    Owner: "bayu"
