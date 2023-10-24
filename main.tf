@@ -1,6 +1,6 @@
 locals {
-  vpcs                     = yamldecode(file("${path.module}/input/vpcs.yaml"))
-  sg_rules                 = yamldecode(file("${path.module}/input/sg-rules.yaml"))
+  vpcs     = yamldecode(file("${path.module}/input/vpcs.yaml"))
+  sg_rules = yamldecode(file("${path.module}/input/sg-rules.yaml"))
 }
 
 resource "aws_ec2_transit_gateway" "this" {
