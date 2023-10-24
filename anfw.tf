@@ -1,3 +1,8 @@
+locals {
+  fivetuple_rule_group_001 = yamldecode(file("${path.module}/input/fivetuple-rule-group-001.yaml"))
+  fqdn_rule_group_001      = yamldecode(file("${path.module}/input/fqdn-rule-group-001.yaml"))
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Firewall (Stateful) Rule Groups
 # ---------------------------------------------------------------------------------------------------------------------
